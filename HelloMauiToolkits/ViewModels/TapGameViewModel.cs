@@ -1,14 +1,21 @@
-using System.Windows.Input;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-
 namespace HelloMauiToolkits;
 
-partial class TapGameViewModel(TapCountService tapCountService, IDispatcher dispatcher) : BaseViewModel
+partial class TapGameViewModel : BaseViewModel
 {
 	readonly WeakEventManager _gameEndedWeakEventManager = new();
-	readonly TapCountService _tapCountService = tapCountService;
-	readonly IDispatcher _dispatcher = dispatcher;
+	readonly TapCountService _tapCountService;
+	readonly IDispatcher _dispatcher;
+
+	public TapGameViewModel(TapCountService tapCountService, IDispatcher dispatcher)
+	{
+		_dispatcher = dispatcher;
+		_tapCountService = tapCountService;
+
+		HighScore = tapCountService.TapCountHighScore;
+
+		GameButtonTappedCommand = new Command<string?>(GameButtonTapped, _ => CanGameButtonTappedCommandExecute);
+		UpdateHighScoreCommand = new Command<int>(UpdateHighScore);
+	}
 
 	public event EventHandler<GameEndedEventArgs> GameEnded
 	{
@@ -16,57 +23,42 @@ partial class TapGameViewModel(TapCountService tapCountService, IDispatcher disp
 		remove => _gameEndedWeakEventManager.RemoveEventHandler(value);
 	}
 
-	[ObservableProperty]
-	public partial int TapCount { get; private set; }
-
-	[ObservableProperty]
-	public partial int HighScore { get; private set; } = tapCountService.TapCountHighScore;
-
-	[ObservableProperty]
-	public partial int TimerSecondsRemaining { get; private set; } = GameConstants.GameDuration.Seconds;
-
-	[ObservableProperty]
-	public partial string GameButtonText { get; private set; } = GameConstants.GameButtonText_Start;
-
-	[ObservableProperty, NotifyCanExecuteChangedFor(nameof(GameButtonTappedCommand))]
-	public partial bool CanGameButtonTappedCommandExecute { get; private set; } = true;
-
 	public Command GameButtonTappedCommand { get; }
 	public Command UpdateHighScoreCommand { get; }
 
-	public string GameButtonText
-	{
-		get => gameButtonText;
-		set => SetProperty(ref gameButtonText, value);
-	}
-
 	public bool CanGameButtonTappedCommandExecute
 	{
-		get => canGameButtonTappedCommandExecute;
+		get;
 		set
 		{
-			if (SetProperty(ref canGameButtonTappedCommandExecute, value))
+			if (SetProperty(ref field, value))
 				GameButtonTappedCommand.ChangeCanExecute();
 		}
-	}
+	} = true;
+
+	public string GameButtonText
+	{
+		get;
+		set => SetProperty(ref field, value);
+	} = GameConstants.GameButtonText_Start;
 
 	public int TapCount
 	{
-		get => tapCount;
-		set => SetProperty(ref tapCount, value);
+		get;
+		set => SetProperty(ref field, value);
 	}
 
 	public int HighScore
 	{
-		get => highScore;
-		set => SetProperty(ref highScore, value);
+		get;
+		set => SetProperty(ref field, value);
 	}
 
 	public int TimerSecondsRemaining
 	{
-		get => timerSecondsRemaining;
-		set => SetProperty(ref timerSecondsRemaining, value);
-	}
+		get;
+		set => SetProperty(ref field, value);
+	} = GameConstants.GameDuration.Seconds;
 
 	void GameButtonTapped(string? buttonText)
 	{
@@ -86,6 +78,7 @@ partial class TapGameViewModel(TapCountService tapCountService, IDispatcher disp
 			throw new NotSupportedException("Invalid Game State");
 		}
 	}
+
 	void UpdateHighScore(int score)
 	{
 		_tapCountService.TapCountHighScore = HighScore = score;
