@@ -1,9 +1,8 @@
 namespace HelloMauiToolkits;
 
-sealed class App : Application
+sealed partial class App(AppShell appShell) : Application
 {
-	public App(AppShell appShell)
-	{
-		MainPage = appShell;
-	}
+	readonly AppShell _appShell = appShell;
+
+	protected override Window CreateWindow(IActivationState? activationState) => new(_appShell);
 }

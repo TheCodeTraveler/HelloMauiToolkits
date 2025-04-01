@@ -4,29 +4,32 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace HelloMauiToolkits;
 
-class TapGameViewModel : BaseViewModel
+partial class TapGameViewModel(TapCountService tapCountService, IDispatcher dispatcher) : BaseViewModel
 {
-	readonly TapCountService tapCountService;
-	readonly IDispatcher dispatcher;
+	readonly WeakEventManager _gameEndedWeakEventManager = new();
+	readonly TapCountService _tapCountService = tapCountService;
+	readonly IDispatcher _dispatcher = dispatcher;
 
-	int tapCount, highScore, timerSecondsRemaining = GameConstants.GameDuration.Seconds;
-
-	string gameButtonText = GameConstants.GameButtonText_Start;
-
-	bool canGameButtonTappedCommandExecute = true;
-
-	public TapGameViewModel(TapCountService tapCountService, IDispatcher dispatcher)
+	public event EventHandler<GameEndedEventArgs> GameEnded
 	{
-		this.tapCountService = tapCountService;
-		this.dispatcher = dispatcher;
-
-		GameButtonTappedCommand = new Command<string>(GameButtonTapped, _ => CanGameButtonTappedCommandExecute);
-		UpdateHighScoreCommand = new Command<int>(UpdateHighScore);
-		
-		HighScore = tapCountService.TapCountHighScore;
+		add => _gameEndedWeakEventManager.AddEventHandler(value);
+		remove => _gameEndedWeakEventManager.RemoveEventHandler(value);
 	}
 
-	public event EventHandler<GameEndedEventArgs>? GameEnded;
+	[ObservableProperty]
+	public partial int TapCount { get; private set; }
+
+	[ObservableProperty]
+	public partial int HighScore { get; private set; } = tapCountService.TapCountHighScore;
+
+	[ObservableProperty]
+	public partial int TimerSecondsRemaining { get; private set; } = GameConstants.GameDuration.Seconds;
+
+	[ObservableProperty]
+	public partial string GameButtonText { get; private set; } = GameConstants.GameButtonText_Start;
+
+	[ObservableProperty, NotifyCanExecuteChangedFor(nameof(GameButtonTappedCommand))]
+	public partial bool CanGameButtonTappedCommandExecute { get; private set; } = true;
 
 	public Command GameButtonTappedCommand { get; }
 	public Command UpdateHighScoreCommand { get; }
@@ -85,12 +88,12 @@ class TapGameViewModel : BaseViewModel
 	}
 	void UpdateHighScore(int score)
 	{
-		tapCountService.TapCountHighScore = HighScore = score;
+		_tapCountService.TapCountHighScore = HighScore = score;
 	}
 
 	void StartGame()
 	{
-		var timer = dispatcher.CreateTimer();
+		var timer = _dispatcher.CreateTimer();
 		timer.Interval = TimeSpan.FromSeconds(1);
 
 		timer.Tick += HandleTimerTicked;
@@ -106,7 +109,7 @@ class TapGameViewModel : BaseViewModel
 		{
 			CanGameButtonTappedCommandExecute = false;
 
-			GameEnded?.Invoke(this, new GameEndedEventArgs(score));
+			OnGameEnded(new GameEndedEventArgs(score));
 
 			TimerSecondsRemaining = GameConstants.GameDuration.Seconds;
 			GameButtonText = GameConstants.GameButtonText_Start;
@@ -119,19 +122,21 @@ class TapGameViewModel : BaseViewModel
 		}
 	}
 
-
 	async void HandleTimerTicked(object? sender, EventArgs e)
 	{
 		TimerSecondsRemaining--;
 
-		if (TimerSecondsRemaining == 0)
+		if (TimerSecondsRemaining is 0)
 		{
-			var timer = sender as IDispatcherTimer;
+			ArgumentNullException.ThrowIfNull(sender);
 
-			timer?.Stop();
-			timer = null;
+			var timer = (IDispatcherTimer)sender;
+
+			timer.Stop();
 
 			await EndGame(TapCount);
 		}
 	}
+
+	void OnGameEnded(GameEndedEventArgs eventArgs) => _gameEndedWeakEventManager.HandleEvent(this, eventArgs, nameof(GameEnded));
 }

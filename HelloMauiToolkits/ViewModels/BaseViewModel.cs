@@ -4,5 +4,5 @@ namespace HelloMauiToolkits;
 
 partial class BaseViewModel : ObservableObject
 {
-	
+
 }
