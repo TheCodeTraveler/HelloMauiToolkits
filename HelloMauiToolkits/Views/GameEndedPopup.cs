@@ -17,11 +17,11 @@ sealed partial class GameEndedPopup : Popup
 		const int popupWidth = 250;
 		const int padding = 24;
 		const int spacing = 12;
-		
+
 		var description = $"You scored {score} points!";
-		
+
 		VerticalOptions = HorizontalOptions = LayoutAlignment.Center;
-		
+
 		Opened += HandleOpened;
 		Color = Colors.Transparent;
 		CanBeDismissedByTappingOutsideOfPopup = false;
@@ -34,7 +34,7 @@ sealed partial class GameEndedPopup : Popup
 #if Android
 			StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(40) },
 #endif
-			
+
 			Content = new VerticalStackLayout
 			{
 				Spacing = spacing,
@@ -45,9 +45,9 @@ sealed partial class GameEndedPopup : Popup
 
 					new GamedEndedLabel(descriptionFontSize, description)
 						.Assign(out Label descriptionLabel),
-					
+
 					new GamedEndedLabel(scoreEmojiFontSize, scoreEmoji)
-						.Bind(Label.HeightRequestProperty, 
+						.Bind(Label.HeightRequestProperty,
 								static (Label descriptionLabel) => descriptionLabel.Height,
 								convert: (double descriptionLabelHeight) => combinedDescriptionLabelEmojiLabelHeight - descriptionLabelHeight,
 								source: descriptionLabel)

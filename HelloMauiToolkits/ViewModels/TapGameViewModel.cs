@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 namespace HelloMauiToolkits;
-		
+
 partial class TapGameViewModel(TapCountService tapCountService, IDispatcher dispatcher) : BaseViewModel
 {
 	readonly WeakEventManager _gameEndedWeakEventManager = new();
@@ -19,13 +19,13 @@ partial class TapGameViewModel(TapCountService tapCountService, IDispatcher disp
 	public partial int TapCount { get; private set; }
 
 	[ObservableProperty]
-	public partial int HighScore { get; private set; }= tapCountService.TapCountHighScore;
+	public partial int HighScore { get; private set; } = tapCountService.TapCountHighScore;
 
 	[ObservableProperty]
-	public partial int TimerSecondsRemaining { get; private set; }= GameConstants.GameDuration.Seconds;
+	public partial int TimerSecondsRemaining { get; private set; } = GameConstants.GameDuration.Seconds;
 
 	[ObservableProperty]
-	public partial string GameButtonText { get; private set; }= GameConstants.GameButtonText_Start;
+	public partial string GameButtonText { get; private set; } = GameConstants.GameButtonText_Start;
 
 	[ObservableProperty, NotifyCanExecuteChangedFor(nameof(GameButtonTappedCommand))]
 	public partial bool CanGameButtonTappedCommandExecute { get; private set; } = true;
@@ -92,7 +92,7 @@ partial class TapGameViewModel(TapCountService tapCountService, IDispatcher disp
 		if (TimerSecondsRemaining is 0)
 		{
 			ArgumentNullException.ThrowIfNull(sender);
-			
+
 			var timer = (IDispatcherTimer)sender;
 
 			timer.Stop();
