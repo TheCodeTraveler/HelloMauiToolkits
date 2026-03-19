@@ -2,7 +2,7 @@
 <Project>
   <PropertyGroup>
     <Nullable>enable</Nullable>
-    <NetVersion>net9.0</NetVersion>
+    <NetVersion>net10.0</NetVersion>
     <IsTrimmable>false</IsTrimmable>
     <LangVersion>preview</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -16,7 +16,7 @@
     <NuGetAuditMode>all</NuGetAuditMode>
 
     <!-- MAUI Specific -->
-    <MauiVersion>9.0.30</MauiVersion>
+    <MauiVersion>10.0.50</MauiVersion>
     <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
     <SkipValidateMauiImplicitPackageReferences>true</SkipValidateMauiImplicitPackageReferences>
     <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>

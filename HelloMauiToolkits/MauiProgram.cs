@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Maui;
+﻿using System.Diagnostics.CodeAnalysis;
+using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Markup;
 using Microsoft.Extensions.Logging;
 
@@ -22,7 +23,7 @@ public static class MauiProgram
 		builder.Logging.AddDebug();
 #endif
 		// Add Pages + ViewModels
-		builder.Services.AddTransientWithShellRoute<TapGamePage, TapGameViewModel>();
+		builder.Services.AddTransientWithShellRoute<TapGamePage, TapGameViewModel>("/TapGamePage");
 
 		// Add Services
 		builder.Services.AddSingleton<App>();
@@ -31,12 +32,5 @@ public static class MauiProgram
 		builder.Services.AddSingleton<IPreferences>(Preferences.Default);
 
 		return builder.Build();
-	}
-
-	static IServiceCollection AddTransientWithShellRoute<TPage, TViewModel>(this IServiceCollection services)
-		where TPage : BasePage<TViewModel>
-		where TViewModel : BaseViewModel
-	{
-		return services.AddTransientWithShellRoute<TPage, TViewModel>($"/{typeof(TPage).Name}");
 	}
 }
