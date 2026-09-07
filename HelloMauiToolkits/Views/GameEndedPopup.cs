@@ -1,8 +1,7 @@
-using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Markup;
 using CommunityToolkit.Maui.Views;
 using Microsoft.Maui.Controls.Shapes;
-using LayoutAlignment = Microsoft.Maui.Primitives.LayoutAlignment;
 
 namespace HelloMauiToolkits;
 
@@ -15,51 +14,54 @@ sealed partial class GameEndedPopup : Popup
 		const int scoreEmojiFontSize = 64;
 		const int combinedDescriptionLabelEmojiLabelHeight = 175;
 		const int popupWidth = 250;
+		const int popupHeight = 315;
 		const int padding = 24;
 		const int spacing = 12;
 
 		var description = $"You scored {score} points!";
 
-		VerticalOptions = HorizontalOptions = LayoutAlignment.Center;
-
 		Opened += HandleOpened;
-		Color = Colors.Transparent;
+
+		Padding = padding;
+		WidthRequest = popupWidth;
+		HeightRequest = popupHeight;
+		BackgroundColor = ColorConstants.ButtonBackgroundColor;
 		CanBeDismissedByTappingOutsideOfPopup = false;
+		VerticalOptions = HorizontalOptions = LayoutOptions.Center;
 
-		Content = new Border
+		Content = new VerticalStackLayout
 		{
-			BackgroundColor = ColorConstants.ButtonBackgroundColor,
-			StrokeThickness = 16,
-			Stroke = ColorConstants.ButtonBackgroundColor,
-#if Android
-			StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(40) },
-#endif
-
-			Content = new VerticalStackLayout
+			Spacing = spacing,
+			Children =
 			{
-				Spacing = spacing,
-				Children =
-				{
-					new GamedEndedLabel(titleFontSize, title)
-						.Margins(bottom: 8),
+				new GamedEndedLabel(titleFontSize, title)
+					.Margins(bottom: 8),
 
-					new GamedEndedLabel(descriptionFontSize, description)
-						.Assign(out Label descriptionLabel),
+				new GamedEndedLabel(descriptionFontSize, description)
+					.Assign(out Label descriptionLabel),
 
-					new GamedEndedLabel(scoreEmojiFontSize, scoreEmoji)
-						.Bind(Label.HeightRequestProperty,
-								static (Label descriptionLabel) => descriptionLabel.Height,
-								convert: (double descriptionLabelHeight) => combinedDescriptionLabelEmojiLabelHeight - descriptionLabelHeight,
-								source: descriptionLabel)
-				}
-			}.Size(popupWidth, 315)
-			 .Padding(padding)
+				new GamedEndedLabel(scoreEmojiFontSize, scoreEmoji)
+					.Bind(Label.HeightRequestProperty,
+							static (Label descriptionLabel) => descriptionLabel.Height,
+							convert: (double descriptionLabelHeight) => combinedDescriptionLabelEmojiLabelHeight - descriptionLabelHeight,
+							source: descriptionLabel)
+			}
 		};
 	}
 
-	async void HandleOpened(object? sender, PopupOpenedEventArgs e)
+	public static PopupOptions PopupOptions { get; } = new()
 	{
-		await Task.Delay(TimeSpan.FromSeconds(3));
+		Shape = new RoundRectangle
+		{
+			CornerRadius = new CornerRadius(40),
+			StrokeThickness = 16,
+			Stroke = ColorConstants.ButtonBackgroundColor
+		}
+	};
+
+	async void HandleOpened(object? sender, EventArgs e)
+	{
+		await Task.Delay(GameConstants.GameEndPopupDisplayTime);
 		await CloseAsync();
 	}
 
