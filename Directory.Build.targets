@@ -42,20 +42,4 @@
     <Compile Remove="**\net\**\*.cs" />
     <None Include="**\net\**\*.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
   </ItemGroup>
-
-  <!--
-     Before codesign runs on a macOS-built iOS/macOS app bundle, strip any
-     Finder / resource-fork extended attributes (e.g. com.apple.FinderInfo,
-     com.apple.ResourceFork, com.apple.fileprovider.fpfs) that otherwise make
-     codesign fail with "Disallowed xattr com.apple.FinderInfo found on
-      ...app". macOS only; xattr is unavailable on other platforms.
-  -->
-  <Target Name="_StripAppBundleFinderXAttrs"
-          BeforeTargets="_CodesignAppBundle"
-          Condition="$([MSBuild]::IsOSPlatform('osx')) And Exists('$(AppBundleDir)')">
-      <Exec Command="xattr -cr &quot;$(AppBundleDir)&quot;"
-            WorkingDirectory="$(MSBuildProjectDirectory)"
-            IgnoreExitCode="true"
-            ContinueOnError="true" />
-  </Target>
 </Project>
