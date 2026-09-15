@@ -23,7 +23,6 @@ sealed partial class HighScoreLabel : Label
 	{
 		var highScoreLabel = (HighScoreLabel)bindable;
 
-		// Don't celebrate the saved High Score that is applied when TapGamePage is first created
 		if (!highScoreLabel.IsLoaded || (int)newValue <= (int)oldValue)
 			return;
 

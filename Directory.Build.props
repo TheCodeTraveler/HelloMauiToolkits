@@ -5,7 +5,8 @@
     <NetVersion>net10.0</NetVersion>
     <IsTrimmable>false</IsTrimmable>
     <LangVersion>preview</LangVersion>
-    <NoWarn>$(NoWarn);MCTEXP001</NoWarn>
+    <!-- SA0001: XML comment analysis is disabled due to project configuration. Reported without a source location, so it cannot be configured in .editorconfig -->
+    <NoWarn>$(NoWarn);MCTEXP001;SA0001</NoWarn>
     <ImplicitUsings>enable</ImplicitUsings>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
@@ -63,5 +64,10 @@
       IL2120,IL2121,IL2122,
       IL3050,IL3051,IL3052,IL3053,IL3054,IL3055,IL3056
     </WarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- Only enforce StyleCop element ordering rules (SA1201, SA1202, SA1204, SA1214, SA1215) in Release builds -->
+  <PropertyGroup Condition="'$(Configuration)' != 'Release'">
+    <NoWarn>$(NoWarn);SA1201;SA1202;SA1204;SA1214;SA1215</NoWarn>
   </PropertyGroup>
 </Project>
