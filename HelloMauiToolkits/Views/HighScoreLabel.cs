@@ -1,4 +1,3 @@
-using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Markup;
 
 namespace HelloMauiToolkits;
@@ -13,11 +12,30 @@ sealed partial class HighScoreLabel : Label
 			.Font(size: 36, bold: true);
 	}
 
-	[BindableProperty(PropertyChangedMethodName = nameof(HandleHighScoreChanged))]
-	public partial int HighScore { get; set; }
+	public static readonly BindableProperty HighScoreProperty = BindableProperty.Create(
+		nameof(HighScore),
+		typeof(int),
+		typeof(HighScoreLabel),
+		0,
+		propertyChanged: HandleHighScoreChanged);
 
-	[BindableProperty]
-	public partial Color CelebrationTextColor { get; set; } = Colors.DarkGreen;
+	public static readonly BindableProperty CelebrationTextColorProperty = BindableProperty.Create(
+		nameof(CelebrationTextColor),
+		typeof(Color),
+		typeof(HighScoreLabel),
+		Colors.DarkGreen);
+
+	public int HighScore
+	{
+		get => (int)GetValue(HighScoreProperty);
+		set => SetValue(HighScoreProperty, value);
+	}
+
+	public Color CelebrationTextColor
+	{
+		get => (Color)GetValue(CelebrationTextColorProperty);
+		set => SetValue(CelebrationTextColorProperty, value);
+	}
 
 	static async void HandleHighScoreChanged(BindableObject bindable, object oldValue, object newValue)
 	{
