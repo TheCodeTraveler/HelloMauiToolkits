@@ -1,4 +1,4 @@
-using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Maui.Markup;
 using CommunityToolkit.Maui.Views;
 using static CommunityToolkit.Maui.Markup.GridRowsColumns;
@@ -7,7 +7,6 @@ namespace HelloMauiToolkits;
 
 partial class TapGamePage : BasePage<TapGameViewModel>
 {
-	readonly Label _highScoreLabel;
 	readonly TapCountService _tapCountService;
 
 	public TapGamePage(TapGameViewModel viewModel, TapCountService tapCountService) : base(viewModel)
@@ -31,13 +30,15 @@ partial class TapGamePage : BasePage<TapGameViewModel>
 
 			Children =
 			{
-				new TapGameLabel(36)
+				new HighScoreLabel()
 					.Row(Row.HighScore)
-					.Assign(out _highScoreLabel)
 					.Bind(Label.TextProperty,
 							getter: static (TapGameViewModel vm) => vm.HighScore,
 							mode: BindingMode.OneWay,
-							convert: static number => $"High Score: {number}"),
+							convert: static number => $"High Score: {number}")
+					.Bind(HighScoreLabel.HighScoreProperty,
+							getter: static (TapGameViewModel vm) => vm.HighScore,
+							mode: BindingMode.OneWay),
 
 				new TapGameLabel(24) { LineBreakMode =  LineBreakMode.WordWrap }
 					.Row(Row.Description)
@@ -91,43 +92,10 @@ partial class TapGamePage : BasePage<TapGameViewModel>
 										gameScoreEmoji)
 		};
 
-		popup.Closed += OnGameEndedPopupPopupClosed;
+		await this.ShowPopupAsync(popup, GameEndedPopup.PopupOptions);
 
-		await this.ShowPopupAsync(popup);
-
-		async void OnGameEndedPopupPopupClosed(object? sender, PopupClosedEventArgs popupClosedEventArgs)
-		{
-			ArgumentNullException.ThrowIfNull(sender);
-
-			var popup = (Popup)sender;
-			popup.Closed -= OnGameEndedPopupPopupClosed;
-
-			if (!isHighScore)
-				return;
-
-			await AnimateHighScoreColor(gameEndedEventArgs.FinalScore);
-		}
-	}
-
-	async Task AnimateHighScoreColor(int highScore)
-	{
-		var highScoreLabelOriginalTextColor = _highScoreLabel.TextColor;
-
-		var changeHighScoreLabelTextColorTask = _highScoreLabel.TextColorTo(Colors.DarkGreen, length: 50);
-		var scaleHighScoreLabelTask = _highScoreLabel.ScaleTo(1.15, 110);
-		var minimumAnimationTimeTask = Task.Delay(GameConstants.GameEndPopupDisplayTime);
-
-		BindingContext.UpdateHighScoreCommand.Execute(highScore);
-
-		await Task.WhenAll(changeHighScoreLabelTextColorTask, scaleHighScoreLabelTask);
-
-		scaleHighScoreLabelTask = _highScoreLabel.ScaleTo(1.0, 100);
-
-		await Task.WhenAll(scaleHighScoreLabelTask, minimumAnimationTimeTask);
-
-		changeHighScoreLabelTextColorTask = _highScoreLabel.TextColorTo(highScoreLabelOriginalTextColor, length: 500);
-
-		await changeHighScoreLabelTextColorTask;
+		if (isHighScore)
+			BindingContext.UpdateHighScoreCommand.Execute(gameEndedEventArgs.FinalScore);
 	}
 
 	sealed partial class TapGameLabel : Label
@@ -162,8 +130,8 @@ partial class TapGamePage : BasePage<TapGameViewModel>
 
 		async void HandleClicked(object? sender, EventArgs e)
 		{
-			await this.ScaleTo(1.1, 100);
-			await this.ScaleTo(1.0, 100);
+			await this.ScaleToAsync(1.1, 100);
+			await this.ScaleToAsync(1.0, 100);
 		}
 	}
 }
