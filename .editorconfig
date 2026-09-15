@@ -126,3 +126,34 @@ dotnet_diagnostic.CA1834.severity = error
 
 # IDE0220: Add explicit cast
 dotnet_diagnostic.IDE0220.severity = error
+
+# StyleCop Analyzers
+# Only the Element Positioning (Ordering) rules below are enforced; all other StyleCop rules are disabled
+# Debug builds suppress these rules via <NoWarn> in Directory.Build.props, so they are only enforced in Release builds
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.DocumentationRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.LayoutRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.MaintainabilityRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.NamingRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.OrderingRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.ReadabilityRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.SpacingRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.SpecialRules.severity = none
+
+# SA1201: Elements should appear in the correct order
+# File/namespace: Extern Alias Directives, Using Directives, Namespaces, Delegates, Enums, Interfaces, Records, Structs, Classes
+# Class/struct/interface: Fields, Constructors, Finalizers, Delegates, Events, Enums, Interfaces, Properties, Indexers, Methods, Records, Structs, Classes
+# Note: StyleCop orders a `record` as a Class and a `record struct` as a Struct
+dotnet_diagnostic.SA1201.severity = error
+
+# SA1202: Elements should be ordered by access (public, internal, protected internal, protected, private protected, private)
+dotnet_diagnostic.SA1202.severity = error
+
+# SA1204: Static elements should appear before instance elements
+dotnet_diagnostic.SA1204.severity = error
+
+# SA1214: Readonly fields should appear before non-readonly fields
+dotnet_diagnostic.SA1214.severity = error
+
+# SA1215: Instance readonly elements should appear before instance non-readonly elements
+# Note: StyleCop Analyzers merged SA1215 into SA1214; these violations are reported as SA1214
+dotnet_diagnostic.SA1215.severity = error
