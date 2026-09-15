@@ -14,7 +14,7 @@ sealed partial class GameEndedPopup : Popup
 		const int scoreEmojiFontSize = 64;
 		const int combinedDescriptionLabelEmojiLabelHeight = 175;
 		const int popupWidth = 250;
-		const int popupHeight = 315;
+		const int popupHeight = 375;
 		const int padding = 24;
 		const int spacing = 12;
 

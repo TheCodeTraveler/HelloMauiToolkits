@@ -5,6 +5,7 @@
     <NetVersion>net10.0</NetVersion>
     <IsTrimmable>false</IsTrimmable>
     <LangVersion>preview</LangVersion>
+    <NoWarn>$(NoWarn);MCTEXP001</NoWarn>
     <ImplicitUsings>enable</ImplicitUsings>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
