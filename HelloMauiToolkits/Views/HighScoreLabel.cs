@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Markup;
 
 namespace HelloMauiToolkits;
